@@ -23,13 +23,13 @@ jobs:
         run: npm ci  # Clean install dependencies as defined in package-lock.json
 
       - name: Build Angular Project
-        run: npm run build -- --output-path=dist  # Build Angular app to dist folder
+        run: ng b --output-path bin --base-href /demo/  # Build Angular app to dist folder
 
       - name: Create docs Directory if Not Exists
         run: mkdir -p docs  # Create docs folder if it doesn't already exist
 
       - name: Move Built Files
-        run: mv dist/* docs/  # Move files from dist to docs
+        run: mv bin/browser/* docs/  # Move files from dist to docs
 
       - name: Commit and Push Changes
         run: |
