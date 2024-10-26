@@ -11,16 +11,16 @@ jobs:
     
     steps:
       - name: Checkout Code
-        uses: actions/checkout@v2  # Check out the code from the repository
+        uses: actions/checkout@v4.2.2  # Check out the code from the repository
 
       - name: Set up Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4.1.0
         with:
-          node-version: '18.x'  # Node.js version compatible with Angular xxx
+          node-version: '20.x'  # Node.js version compatible with Angular xxx
           cache: 'npm'
 
       - name: Install Dependencies
-        run: npm ci  # Clean install dependencies as defined in package-lock.json
+        run: npm install
 
       - name: Build Angular Project
         run: ng b --output-path bin --base-href /demo/  # Build Angular app to dist folder
