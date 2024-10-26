@@ -1,0 +1,41 @@
+name: Build and Deploy on Release Merge
+
+on:
+  push:
+    branches:
+      - release  # Triggers when code is pushed to the 'release' branch
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v2  # Check out the code from the repository
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v2
+        with:
+          dotnet-version: '7.x'  # Specify the .NET version if needed
+
+      - name: Restore Dependencies
+        run: dotnet restore  # Restore dependencies as defined in .csproj or .sln
+
+      - name: Build Project
+        run: dotnet build --configuration Release -o bin  # Build the release branch to bin folder
+
+      - name: Create docs Directory if Not Exists
+        run: mkdir -p docs  # Create the docs folder if it doesn't already exist
+
+      - name: Move Built Files
+        run: mv bin/browser/* docs/  # Move files from bin/browser to docs
+
+      - name: Commit and Push Changes
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/
+          git commit -m "Move built files to docs"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}  # Use GitHub's token to commit changes
