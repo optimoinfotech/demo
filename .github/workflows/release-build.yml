@@ -1,0 +1,43 @@
+name: Deploy Angular to GitHub Pages on Release Merge
+
+# Trigger this workflow when a pull request is merged into the release branch
+on:
+  pull_request:
+    branches:
+      - release
+    types: 
+      - closed  # This triggers when the PR is merged or closed
+
+jobs:
+  deploy:
+    if: github.event.pull_request.merged == true  # Ensures the action only runs on merge, not just PR close
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out the code from the release branch
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          ref: release  # Checkout the release branch
+
+      # Step 2: Set up Node.js environment
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'  # Specify the version of Node.js you need
+
+      # Step 3: Install dependencies
+      - name: Install dependencies
+        run: npm install
+
+      # Step 4: Build the Angular app
+      - name: Build Angular app
+        run: npm run build -- --output-path=dist --base-href "/demo/"
+
+      # Step 5: Deploy to GitHub Pages (gh-pages branch)
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}  # Use GitHub token for authentication
+          publish_branch: gh-pages  # Deploy to gh-pages branch
+          publish_dir: ./dist/browser  # Publish the built Angular app from the dist folder
